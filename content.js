@@ -19,9 +19,14 @@
 
     Brian Kennish <byoogle@gmail.com>
 */
-var v = document.getElementsByName('cancel_clicked');
+
+// @TODO add options page with:
+//        * open links in new window
+//        * auto-remove app authorizations (single button, click once and removes all social sharing apps)
 
 // @TODO need to detect only the boxes that close and redirect here
+// @TODO not closing some dialogs (The Independant)
+var v = document.getElementsByName('cancel_clicked');
 if(v.length) {
   console.info('frictionless:cancel_clicked:', v[0]);
   v[0].click();
@@ -41,16 +46,16 @@ document.body.addEventListener("click", parse_links);
 
 function parse_links(ev) {
   if(ev.target && ev.target.nodeName == 'A' && ev.target.pathname == '/connect/uiserver.php') {
-    console.info('target_url', ev.target.href);
     var params = get_params(ev.target.href);
     // if(!params) return true;
     // some apps have the redir which we can go to
     if('redirect_uri' in params) {
-      console.info('redir:', params['redirect_uri']);
       // window.document.location = params['redirect_uri'];
       open_new_win(params['redirect_uri']);
+      
+      // @TODO recreate the orig link and click() it
       // ev.target.href = params['redirect_uri'];
-      // ev.target.click();
+
       return false;
     }
     // otherwise go straight to the link
