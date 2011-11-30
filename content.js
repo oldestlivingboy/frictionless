@@ -19,4 +19,60 @@
 
     Brian Kennish <byoogle@gmail.com>
 */
-document.getElementsByName('cancel_clicked')[0].click();
+var v = document.getElementsByName('cancel_clicked');
+
+// @TODO need to detect only the boxes that close and redirect here
+if(v.length) {
+  console.info('frictionless:cancel_clicked:', v[0]);
+  v[0].click();
+}
+
+// @TODO rewrite a href's so that the dialog doesn't appear (remove rel=dialog)
+
+var d_els = document.querySelectorAll("a[data-appname][rel='dialog']");
+for(var x=0; x < d_els.length; x++) {
+  var n = d_els.item(x);
+  var norel = document.createAttribute('rel');
+  norel.value = '';
+  n.attributes.setNamedItem(norel);
+}
+document.body.addEventListener("click", parse_links);
+
+
+function parse_links(ev) {
+  if(ev.target && ev.target.nodeName == 'A' && ev.target.pathname == '/connect/uiserver.php') {
+    console.info('target_url', ev.target.href);
+    var params = get_params(ev.target.href);
+    // if(!params) return true;
+    // some apps have the redir which we can go to
+    if('redirect_uri' in params) {
+      console.info('redir:', params['redirect_uri']);
+      // window.document.location = params['redirect_uri'];
+      open_new_win(params['redirect_uri']);
+      // ev.target.href = params['redirect_uri'];
+      // ev.target.click();
+      return false;
+    }
+    // otherwise go straight to the link
+    window.document.location = ev.target.href;
+  }
+};
+
+function get_params(dest_url) {
+  var params = dest_url.substr(dest_url.indexOf("?")+1).split('&'), r={};
+  if(typeof params !== 'object' || params.length < 2) return false;
+  for(var x=0; x<=params.length;x++) {
+    if(typeof params[x] == "string" && params[x].indexOf('=')) { 
+      var t=params[x].split('='), k=t[0], z=t[1]; 
+      r[k]=decodeURIComponent(z);
+    }
+  }
+  return r;
+};
+
+function open_new_win(url) {
+  var opts = 'toolbar=1,location=1,directories=1,status=1,menubar=1,scrollbars=1,resizable=1';
+  var options = '';
+  var new_win = window.open(url, '_blank', options); 
+  return new_win;
+}

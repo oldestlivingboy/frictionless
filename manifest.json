@@ -14,12 +14,7 @@
     "https://www.facebook.com/*"
   ],
   "content_scripts": [{
-    "matches": [
-      "http://www.facebook.com/dialog/permissions.request?app_id=180444840287*",
-      "https://www.facebook.com/dialog/permissions.request?app_id=180444840287*",
-      "http://www.facebook.com/dialog/permissions.request?app_id=225771117449558*",
-      "https://www.facebook.com/dialog/permissions.request?app_id=225771117449558*"
-    ],
+    "matches": [ "http://*.facebook.com/*", "https://*.facebook.com/*" ],
     "js": ["content.js"],
     "run_at": "document_end"
   }]
