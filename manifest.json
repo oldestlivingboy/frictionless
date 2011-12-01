@@ -1,6 +1,6 @@
 {
   "name": "Frictionless Clicking",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description":
     "Read articles on Facebook without being prompted to add apps.",
   "icons": {"48": "48.png", "128": "128.png"},
@@ -10,11 +10,11 @@
     "idle",
     "notifications",
     "unlimitedStorage",
-    "http://www.facebook.com/*",
-    "https://www.facebook.com/*"
+    "http://*.facebook.com/*",
+    "https://*.facebook.com/*"
   ],
   "content_scripts": [{
-    "matches": [ "http://*.facebook.com/*", "https://*.facebook.com/*" ],
+    "matches": ["http://*.facebook.com/*", "https://*.facebook.com/*"],
     "js": ["content.js"],
     "run_at": "document_end"
   }]
