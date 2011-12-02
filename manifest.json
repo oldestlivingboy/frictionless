@@ -1,6 +1,6 @@
 {
-  "name": "Frictionless Clicking",
-  "version": "1.1.0",
+  "name": "Frictionless",
+  "version": "1.2.0",
   "description":
     "Read articles on Facebook without being prompted to add apps.",
   "icons": {"48": "48.png", "128": "128.png"},
