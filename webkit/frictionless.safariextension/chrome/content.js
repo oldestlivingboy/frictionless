@@ -56,7 +56,7 @@ function rewrite_link(el) {
   }
 }
 
-document.body.addEventListener("click", parse_link_event);
+document.body.addEventListener("mousedown", parse_link_event);
 function parse_link_event(ev) {
   if(ev.target && ev.target.nodeName == 'A' && ev.target.pathname == '/connect/uiserver.php') {
     var params = get_params(ev.target.href);
