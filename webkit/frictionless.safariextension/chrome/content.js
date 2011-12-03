@@ -74,7 +74,7 @@ function rewrite_link(el) {
     var params = get_params(el.href);
     if ('redirect_uri' in params) {
         // console.info('link_rewrite:', el, params['redirect_uri']);
-        el.setAttribute('href', params['redirect_uri']);
+        el.setAttribute('href', anonymize_link(params['redirect_uri']));
     }
 };
 
@@ -89,7 +89,7 @@ function parse_link_event(ev) {
 
         ev.preventDefault();
         if ('redirect_uri' in params) {
-            open_new_win(params['redirect_uri']);
+            open_new_win(anonymize_link(params['redirect_uri']));
             return false;
         }
     }
@@ -110,6 +110,29 @@ function get_params(dest_url) {
         }
     }
     return r;
+};
+
+function encode_qs(obj) {
+  if(typeof obj !== 'object') return ''
+  var r = []; 
+  for(var i in t) { 
+    r.push(i + '=' + encodeURIComponent(t[i])); 
+  }; 
+  return r.join('&');
+};
+
+function anonymize_link(url) {
+  // remove the facebook params in URLs to make the links anonymous
+  var dirty_vars = ['fb_action_ids', 'fb_action_types', 'fb_source', 'fb_ref'], dl = dirty_vars.length;
+  var url_params = get_params(url);
+  var ret_url = '';
+  if(url_params.length < 1)
+    return url;
+  for(var x=0; x<dl; x++) {
+    if(dirty_vars[x] in url_params) 
+      delete url_params[dirty_vars[x]]
+  }
+  return url.substr(0, url.indexOf('?')) + encode_qs(url_params);
 };
 
 function reverse_string(str) {
