@@ -24,79 +24,117 @@
 // @TODO add options page with:
 //        * open links in new window
 //        * auto-remove app authorizations (single button, click once and removes all social sharing apps)
-
 // @TODO need to detect only the boxes that close and redirect here
 // @TODO not closing some dialogs (The Independant)
+// Globals
+var hostRegExp = new RegExp('^(?:f|ht)tp(?:s)?\://([^/]+)', 'im');
 
 // 1. Cancel standalone dialogs
 var apps = [
-  180444840287, // The Guardian
-  225771117449558 // The Washington Post
+180444840287,
+// The Guardian
+225771117449558
+// The Washington Post
 ];
 var appCount = apps.length;
 
 for (var i = 0; i < appCount; i++) {
-  if (
+    if (
     location.href.indexOf('dialog/permissions.request?app_id=' + apps[i]) + 1
-  ) {
-    var button = document.getElementsByName('cancel_clicked')[0];
-    console.info('cancel:', button);
-    button.click();
-    break;
-  }
+    ) {
+        var button = document.getElementsByName('cancel_clicked')[0];
+        console.info('cancel:', button);
+        button.click();
+        break;
+    }
 }
 
 // @TODO rewrite a href's so that the dialog doesn't appear (remove rel=dialog)
 // <a data-appname="Yahoo!" href="/connect/uiserver.php?app_id=194699337231859&amp;method=permissions.request&amp;redirect_uri=http%3A%2F%2Fnews.yahoo.com%2Ftech-firm-implements-employee-zero-email-policy-165311050.html%3Ffb_action_ids%3D10150433450240238%252C971018054873%252C732881153264%252C10100288001030476%252C10150417559698820%26fb_action_types%3Dnews.reads%26fb_source%3Dother_multiline&amp;response_type=code&amp;display=async&amp;perms=email%2Cpublish_actions%2Cuser_birthday%2Cuser_likes&amp;auth_referral=1" rel="dialog" title="Tech Firm Implements Employee ‘Zero Email’ Policy" class="">Tech Firm Implements Employee ‘Zero Email’ Policy</a>
 // 2. Cancel lightboxed dialogs
 var d_els = document.querySelectorAll("a[data-appname][rel='dialog']");
-for(var x=0; x < d_els.length; x++) {
-  var n = d_els.item(x);
-  n.removeAttribute('rel');
-  n.removeAttribute('onmousedown');
-  n.setAttribute('target', '_blank');
-  console.info('rewrite:', n);
-  rewrite_link(n);
+// this could possibly be a better selector.
+var s_els = document.querySelectorAll("h6.ministoryMessage > a[target='_blank']");
+
+kill_events_and_dialogs(d_els);
+kill_events_and_dialogs(s_els);
+
+function kill_events_and_dialogs(nodelist) {
+  var length = nodelist.length;
+  for (var x = 0; x < length; x++) {
+    var n = nodelist.item(x);
+    n.onmousedown = null;
+    n.removeAttribute('rel');
+    n.removeAttribute('onmousedown');
+    n.setAttribute('target', '_blank');
+    console.info('rewrite:', n);
+    rewrite_link(n);
+  }
 }
-var timer = setInterval(parse_links, 100);
+
 
 function rewrite_link(el) {
-  var params = get_params(el.href);
-  if('redirect_uri' in params) {
-    console.info('link_rewrite:', el, params['redirect_uri']);
-    el.setAttribute('href', params['redirect_uri']);
-  }
-}
-
-document.body.addEventListener("mousedown", parse_link_event);
-function parse_link_event(ev) {
-  if(ev.target && ev.target.nodeName == 'A' && ev.target.pathname == '/connect/uiserver.php') {
-    var params = get_params(ev.target.href);
-    if('redirect_uri' in params) {
-      open_new_win(params['redirect_uri']);
-      return false;
+    var params = get_params(el.href);
+    if ('redirect_uri' in params) {
+        console.info('link_rewrite:', el, params['redirect_uri']);
+        el.setAttribute('href', params['redirect_uri']);
     }
-    // otherwise go straight to the link
-    window.document.location = ev.target.href;
-  }
 };
 
-function get_params(dest_url) {
-  var params = dest_url.substr(dest_url.indexOf("?")+1).split('&'), r={};
-  if(typeof params !== 'object' || params.length < 2) return false;
-  for(var x=0; x<=params.length;x++) {
-    if(typeof params[x] == "string" && params[x].indexOf('=')) { 
-      var t=params[x].split('='), k=t[0], z=t[1]; 
-      r[k]=decodeURIComponent(z);
+// 3. Parse link click events
+document.body.addEventListener("mousedown", parse_link_event);
+function parse_link_event(ev) {
+    console.info('clicked link');
+
+    if (ev.target && ev.target.nodeName == 'A') {
+        var params = get_params(ev.target.href);
+        var host = get_host(ev.target.href);
+
+        console.info('clicked link with host:', host);
+
+        ev.preventDefault();
+        if ('redirect_uri' in params) {
+            open_new_win(params['redirect_uri']);
+            return false;
+        }
+        // otherwise go straight to the link
+        // window.document.location = ev.target.href;
     }
-  }
-  return r;
+};
+
+// 4. Rewrite UntrustedLink (which proxies outbound links via the fb warning page.
+// @TODO implement ()
+  // UntrustedLink = {}
+  // UntrustedLink.bootstrap = function(target) {
+      // console.info('untrusted:', target);
+  // };  
+
+// Utility functions
+function get_params(dest_url) {
+    var params = dest_url.substr(dest_url.indexOf("?") + 1).split('&'),
+    r = {};
+    if (typeof params !== 'object' || params.length < 2) return false;
+    for (var x = 0; x <= params.length; x++) {
+        if (typeof params[x] == "string" && params[x].indexOf('=')) {
+            var t = params[x].split('='),
+            k = t[0],
+            z = t[1];
+            r[k] = decodeURIComponent(z);
+        }
+    }
+    return r;
+};
+
+function reverse_string(str) {
+    return str.split('').reverse().join('');
+};
+
+function get_host(url) {
+    var re = hostRegExp;
+    return url.match(re)[1].toString().toLowerCase();
 };
 
 function open_new_win(url) {
-  var opts = 'toolbar=1,location=1,directories=1,status=1,menubar=1,scrollbars=1,resizable=1';
-  var options = '';
-  var new_win = window.open(url, '_blank', options); 
-  return new_win;
-}
+    return window.open(url, '_blank', options);
+};
 
