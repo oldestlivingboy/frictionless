@@ -1,7 +1,7 @@
 /*
-  A content script that cancels adding an app on Facebook.
+  A content script that bypasses adding news apps on Facebook.
 
-  Copyright 2011 Brian Kennish
+  Copyright 2011 Brian Kennish and Nik Cubrilovic
 
   This program is free software: you can redistribute it and/or modify it under
   the terms of the GNU General Public License as published by the Free Software
@@ -18,6 +18,7 @@
   Authors (one per line):
 
     Brian Kennish <byoogle@gmail.com>
+    Nik Cubrilovic <nikcub@gmail.com>
 */
 
 // @TODO add options page with:
@@ -27,24 +28,35 @@
 // @TODO need to detect only the boxes that close and redirect here
 // @TODO not closing some dialogs (The Independant)
 
+// 1. Cancel standalone dialogs
+var apps = [
+  180444840287, // The Guardian
+  225771117449558 // The Washington Post
+];
+var appCount = apps.length;
+
+for (var i = 0; i < appCount; i++) {
+  if (
+    location.href.indexOf('dialog/permissions.request?app_id=' + apps[i]) + 1
+  ) {
+    var button = document.getElementsByName('cancel_clicked')[0];
+    console.info('cancel:', button);
+    button.click();
+    break;
+  }
+}
 
 // @TODO rewrite a href's so that the dialog doesn't appear (remove rel=dialog)
-
-function parse_links() {
-  var v = document.getElementsByName('cancel_clicked');
-  if(v.length) {
-    v[0].click();
-  }
-
-  var d_els = document.querySelectorAll("a[data-appname][rel='dialog']");
-  for(var x=0; x < d_els.length; x++) {
-    var n = d_els.item(x);
-    n.removeAttribute('rel');
-    n.removeAttribute('onmousedown');
-    n.setAttribute('target', '_blank');
-    // console.info('rewrite:', n);
-    rewrite_link(n);
-  }
+// <a data-appname="Yahoo!" href="/connect/uiserver.php?app_id=194699337231859&amp;method=permissions.request&amp;redirect_uri=http%3A%2F%2Fnews.yahoo.com%2Ftech-firm-implements-employee-zero-email-policy-165311050.html%3Ffb_action_ids%3D10150433450240238%252C971018054873%252C732881153264%252C10100288001030476%252C10150417559698820%26fb_action_types%3Dnews.reads%26fb_source%3Dother_multiline&amp;response_type=code&amp;display=async&amp;perms=email%2Cpublish_actions%2Cuser_birthday%2Cuser_likes&amp;auth_referral=1" rel="dialog" title="Tech Firm Implements Employee ‘Zero Email’ Policy" class="">Tech Firm Implements Employee ‘Zero Email’ Policy</a>
+// 2. Cancel lightboxed dialogs
+var d_els = document.querySelectorAll("a[data-appname][rel='dialog']");
+for(var x=0; x < d_els.length; x++) {
+  var n = d_els.item(x);
+  n.removeAttribute('rel');
+  n.removeAttribute('onmousedown');
+  n.setAttribute('target', '_blank');
+  console.info('rewrite:', n);
+  rewrite_link(n);
 }
 var timer = setInterval(parse_links, 100);
 
