@@ -78,10 +78,11 @@ function kill_events_and_dialogs(nodelist) {
 
 function rewrite_link(el) {
     var params = get_params(el.href);
-    if ('redirect_uri' in params) {
-        console.info('link_rewrite:', el, params['redirect_uri']);
-        el.setAttribute('href', anonymize_link(params['redirect_uri']));
-    }
+    var new_url = el.href;
+    
+    if ('redirect_uri' in params)
+        new_url = params['redirect_uri'];
+    el.setAttribute('href', anonymize_link(new_url));
 };
 
 // 3. Parse link click events
