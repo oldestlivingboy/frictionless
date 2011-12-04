@@ -55,33 +55,33 @@ document.body.addEventListener("load", run_rewrites, false);
 document.body.addEventListener("DOMNodeInserted", run_rewrites, false);
 
 function run_rewrites() {
-  var d_els = document.querySelectorAll("a[data-appname][rel='dialog']");
-  // this could possibly be a better selector.
-  var s_els = document.querySelectorAll("h6.ministoryMessage > a[target='_blank']");
+    var d_els = document.querySelectorAll("a[data-appname][rel='dialog']");
+    // this could possibly be a better selector.
+    var s_els = document.querySelectorAll("h6.ministoryMessage > a[target='_blank']");
 
-  kill_events_and_dialogs(d_els);
-  kill_events_and_dialogs(s_els);
+    kill_events_and_dialogs(d_els);
+    kill_events_and_dialogs(s_els);
 };
 
 function kill_events_and_dialogs(nodelist) {
-  var length = nodelist.length;
-  for (var x = 0; x < length; x++) {
-    var n = nodelist.item(x);
-    n.onmousedown = null;
-    n.removeAttribute('rel');
-    n.removeAttribute('onmousedown');
-    n.setAttribute('target', '_blank');
-    n.setAttribute('data-frictionless', 'rewritten');
-    rewrite_link(n);
-  }
+    var length = nodelist.length;
+    for (var x = 0; x < length; x++) {
+        var n = nodelist.item(x);
+        n.onmousedown = null;
+        n.removeAttribute('rel');
+        n.removeAttribute('onmousedown');
+        n.setAttribute('target', '_blank');
+        n.setAttribute('data-frictionless', 'rewritten');
+        rewrite_link(n);
+    }
 };
 
 function rewrite_link(el) {
     var params = get_params(el.href);
     var new_url = el.href;
-    
+
     if ('redirect_uri' in params)
-        new_url = params['redirect_uri'];
+    new_url = params['redirect_uri'];
     el.setAttribute('href', anonymize_link(new_url));
 };
 
@@ -94,12 +94,12 @@ function parse_link_event(ev) {
         var host = get_host(ev.target.href);
 
         ev.preventDefault();
-        
-        if(!params) {
-          open_new_win(ev.target.href);
-          return false;
+
+        if (!params) {
+            open_new_win(ev.target.href);
+            return false;
         }
-        
+
         if ('redirect_uri' in params) {
             open_new_win(anonymize_link(params['redirect_uri']));
             return false;
@@ -116,14 +116,14 @@ function get_params(dest_url) {
     for (var x = 0; x <= params.length; x++) {
         if (typeof params[x] == "string" && params[x].indexOf('=')) {
             var t = params[x].split('=');
-            if(t instanceof Array) {
-              var k = t[0];
-              if(t.length > 1) {
-                var z = t[1];
-                r[k] = decodeURIComponent(z);
-              } else {
-                r[k] = '';
-              }
+            if (t instanceof Array) {
+                var k = t[0];
+                if (t.length > 1) {
+                    var z = t[1];
+                    r[k] = decodeURIComponent(z);
+                } else {
+                    r[k] = '';
+                }
             }
         }
     }
@@ -131,27 +131,28 @@ function get_params(dest_url) {
 };
 
 function encode_qs(obj) {
-  if(typeof obj !== 'object') return '';
-  var r = []; 
-  for(var i in obj) { 
-    r.push(i + '=' + encodeURIComponent(t[i])); 
-  }; 
-  return r.join('&');
+    if (typeof obj !== 'object') return '';
+    var r = [];
+    for (var i in obj) {
+        r.push(i + '=' + encodeURIComponent(t[i]));
+    };
+    return r.join('&');
 };
 
 function anonymize_link(url) {
-  // remove the facebook params in URLs to make the links anonymous  
-  var dirty_vars = ['fb_action_ids', 'fb_action_types', 'fb_source', 'fb_ref'], dl = dirty_vars.length;
-  var url_params = get_params(url);
-  if(!url_params) return url;
-  var ret_url = '';
-  if(url_params.length < 1)
+    // remove the facebook params in URLs to make the links anonymous
+    var dirty_vars = ['fb_action_ids', 'fb_action_types', 'fb_source', 'fb_ref'],
+    dl = dirty_vars.length;
+    var url_params = get_params(url);
+    if (!url_params) return url;
+    var ret_url = '';
+    if (url_params.length < 1)
     return url;
-  for(var x=0; x<dl; x++) {
-    if(dirty_vars[x] in url_params) 
-      delete url_params[dirty_vars[x]];
-  }
-  return url.substr(0, url.indexOf('?')) + encode_qs(url_params);
+    for (var x = 0; x < dl; x++) {
+        if (dirty_vars[x] in url_params)
+        delete url_params[dirty_vars[x]];
+    }
+    return url.substr(0, url.indexOf('?')) + encode_qs(url_params);
 };
 
 function reverse_string(str) {
@@ -161,7 +162,7 @@ function reverse_string(str) {
 function get_host(url) {
     var re = hostRegExp;
     var match = url.match(re);
-    if(match instanceof Array && match.length > 0) return match[1].toString().toLowerCase();
+    if (match instanceof Array && match.length > 0) return match[1].toString().toLowerCase();
     return false;
 };
 
