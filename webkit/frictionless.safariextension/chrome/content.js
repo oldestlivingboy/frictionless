@@ -30,6 +30,14 @@ var hostRegExp = new RegExp('^(?:f|ht)tp(?:s)?\://([^/]+)', 'im');
 
 // 1. Cancel standalone dialogs
 var apps = [
+158825937536243,
+// The Daily
+194699337231859,
+// Yahoo
+235586169789578,
+// Indy (UK)
+368513495882,
+// WSJ Social
 180444840287,
 // The Guardian
 225771117449558
