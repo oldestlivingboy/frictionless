@@ -79,17 +79,16 @@ function kill_events_and_dialogs(nodelist) {
 function rewrite_link(el) {
     var params = get_params(el.href);
     if ('redirect_uri' in params) {
-        // console.info('link_rewrite:', el, params['redirect_uri']);
+        console.info('link_rewrite:', el, params['redirect_uri']);
         el.setAttribute('href', anonymize_link(params['redirect_uri']));
     }
 };
 
 // 3. Parse link click events
-document.body.addEventListener("mousedown", parse_link_event);
+document.body.addEventListener("click", parse_link_event);
 function parse_link_event(ev) {
-    console.info('clicked link');
-
     if (ev.target && ev.target.nodeName == 'A') {
+        console.info('click:', ev.target);
         var params = get_params(ev.target.href);
         var host = get_host(ev.target.href);
 
