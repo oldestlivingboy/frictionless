@@ -22,10 +22,9 @@
 */
 
 // @TODO add options page with:
-//        * open links in new window
-//        * auto-remove app authorizations (single button, click once and removes all social sharing apps)
-// @TODO need to detect only the boxes that close and redirect here
-// @TODO not closing some dialogs (The Independant)
+//  * open links in new window
+//  * auto-remove app authorizations (single button, click once and removes all social sharing apps)
+
 // Globals
 var hostRegExp = new RegExp('^(?:f|ht)tp(?:s)?\://([^/]+)', 'im');
 
@@ -55,53 +54,33 @@ document.body.addEventListener("load", run_rewrites, false);
 document.body.addEventListener("DOMNodeInserted", run_rewrites, false);
 
 function run_rewrites() {
-    // newsfeed - app not installed
-    var d_els = document.querySelectorAll("a[data-appname][rel='dialog']");
-    // newsfeed - app installed
-    var a_els = document.querySelectorAll("a[data-appname][title]");
-    // profile feed - both
-    // this could possibly be a better selector.
-    var s_els = document.querySelectorAll("h6.ministoryMessage > a[target='_blank']");
-    // all untrusted (ie. external) links
-    // var untrusted_links = $('a[href][onmousedown^="UntrustedLink"]');
-    var untrusted_links = document.querySelectorAll('a[href][onmousedown^="UntrustedLink"]');
-
-    // var newsItems = document.querySelectorAll();
-    // var externLinks = document.querySelectorAll(untrusted_links);
+  var untrusted_links = $('a[href][onmousedown^="UntrustedLink"]');
+  var story_links = $("a[data-appname][rel='dialog'], a[data-appname][title], h6.ministoryMessage > a[target='_blank']");
     
-    // untrusted_links.each(kill_external_link_warning);
-    // kill_exernal_link_warning(untrusted_links);
-    
-    kill_events_and_dialogs(d_els);
-    kill_events_and_dialogs(a_els);
-    kill_events_and_dialogs(s_els);
-    kill_events_and_dialogs(untrusted_links);
+  untrusted_links.forEach(kill_external_link_warning);
+  story_links.forEach(kill_events_and_dialogs);
 };
 
 function kill_external_link_warning(node) {
-  nodelist[node].removeAttribute('onmousedown');
-  nodelist[node].setAttribute('data-frictionless-safe', 'true');
+  node.removeAttribute('onmousedown');
+  node.setAttribute('data-frictionless-safe', 'true');
 };
 
-function kill_events_and_dialogs(nodelist) {
-    var length = nodelist.length;
-    for (var x = 0; x < length; x++) {
-        var n = nodelist.item(x);
-        if(n.hasAttribute('data-frictionless')) continue;
-        n.onmousedown = null;
-        n.removeAttribute('rel');
-        n.removeAttribute('onmousedown');
-        n.setAttribute('target', '_blank');
-        n.setAttribute('data-frictionless', 'rewritten');
-        rewrite_link(n);
-    }
+function kill_events_and_dialogs(node) {
+  if(node.hasAttribute('data-frictionless')) return;
+  node.onmousedown = null;
+  node.removeAttribute('rel');
+  node.removeAttribute('onmousedown');
+  node.setAttribute('target', '_blank');
+  node.setAttribute('data-frictionless', 'rewritten');
+  rewrite_link(node);
 };
 
 function rewrite_link(el) {
     var params = get_params(el.href);
     var new_url = el.href;
 
-    console.info('rewriting:', new_url);
+    // console.info('rewriting:', new_url);
     
     if ('redirect_uri' in params)
       new_url = anonymize_link(params['redirect_uri']);
@@ -109,7 +88,7 @@ function rewrite_link(el) {
     if (new_url.substr(8, 12) == 'fb.trove.com')
       new_url = get_google_redirect_from_title(el.getAttribute('title'));
     
-    console.info('rewrote:', new_url);
+    // console.info('rewrote:', new_url);
     
     el.setAttribute('href', new_url);
 };
@@ -117,9 +96,12 @@ function rewrite_link(el) {
 
 // Utility functions
 
-function $(selector, root) {
-  var root = root || document;
-  return Array.prototype.slice.call(root.querySelectorAll(selector));
+function $(selector, rootNode) {
+  var root = rootNode || document;
+  var nodeList = root.querySelectorAll(selector);
+  if(nodeList.length)
+    return Array.prototype.slice.call(nodeList);
+  return [];
 };
 
 function get_google_redirect_from_title(story_title) {
