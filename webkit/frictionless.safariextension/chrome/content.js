@@ -24,7 +24,6 @@
 // @TODO add options page with:
 //  * open links in new window
 //  * auto-remove app authorizations (single button, click once and removes all social sharing apps)
-
 // Globals
 var hostRegExp = new RegExp('^(?:f|ht)tp(?:s)?\://([^/]+)', 'im');
 
@@ -63,26 +62,26 @@ document.body.addEventListener("load", run_rewrites, false);
 document.body.addEventListener("DOMNodeInserted", run_rewrites, false);
 
 function run_rewrites() {
-  var untrusted_links = $('a[href][onmousedown^="UntrustedLink"]');
-  var story_links = $("a[data-appname][rel='dialog'], a[data-appname][title], h6.ministoryMessage > a[target='_blank']");
-    
-  untrusted_links.forEach(kill_external_link_warning);
-  story_links.forEach(kill_events_and_dialogs);
+    var untrusted_links = $('a[href][onmousedown^="UntrustedLink"]');
+    var story_links = $("a[data-appname][rel='dialog'], a[data-appname][title], h6.ministoryMessage > a[target='_blank']");
+
+    untrusted_links.forEach(kill_external_link_warning);
+    story_links.forEach(kill_events_and_dialogs);
 };
 
 function kill_external_link_warning(node) {
-  node.removeAttribute('onmousedown');
-  node.setAttribute('data-frictionless-safe', 'true');
+    node.removeAttribute('onmousedown');
+    node.setAttribute('data-frictionless-safe', 'true');
 };
 
 function kill_events_and_dialogs(node) {
-  if(node.hasAttribute('data-frictionless')) return;
-  node.onmousedown = null;
-  node.removeAttribute('rel');
-  node.removeAttribute('onmousedown');
-  node.setAttribute('target', '_blank');
-  node.setAttribute('data-frictionless', 'rewritten');
-  rewrite_link(node);
+    if (node.hasAttribute('data-frictionless')) return;
+    node.onmousedown = null;
+    node.removeAttribute('rel');
+    node.removeAttribute('onmousedown');
+    node.setAttribute('target', '_blank');
+    node.setAttribute('data-frictionless', 'rewritten');
+    rewrite_link(node);
 };
 
 function rewrite_link(el) {
@@ -90,36 +89,35 @@ function rewrite_link(el) {
     var new_url = el.href;
 
     console.info('rewriting:', new_url);
-    
-    if(params.length) {
-      if ('redirect_uri' in params)
+
+    if (params.length) {
+        if ('redirect_uri' in params)
         new_url = anonymize_link(params['redirect_uri']);
     }
-    
+
     if (new_url.substr(8, 12) == 'fb.trove.com')
-      new_url = get_google_redirect_from_title(el.getAttribute('title'));
-    
+    new_url = get_google_redirect_from_title(el.getAttribute('title'));
+
     console.info('rewrote:', new_url);
-    
+
     el.setAttribute('href', new_url);
 };
 
 
 // Utility functions
-
 function $(selector, rootNode) {
-  var root = rootNode || document;
-  var nodeList = root.querySelectorAll(selector);
-  if(nodeList.length)
+    var root = rootNode || document;
+    var nodeList = root.querySelectorAll(selector);
+    if (nodeList.length)
     return Array.prototype.slice.call(nodeList);
-  return [];
+    return [];
 };
 
 function get_google_redirect_from_title(story_title) {
-  // return a 'im feeling lucky' google search link for story title
-  story_title = story_title.replace(/ /g, '+');
-  var search_url = "http://www.google.com/search?btnI=1&q=%22" + story_title + "%22";
-  return search_url;
+    // return a 'im feeling lucky' google search link for story title
+    story_title = story_title.replace(/ /g, '+');
+    var search_url = "http://www.google.com/search?btnI=1&q=%22" + story_title + "%22";
+    return search_url;
 };
 
 function get_params(dest_url) {
