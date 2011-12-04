@@ -58,6 +58,7 @@ for (var i = 0; i < appCount; i++) {
 
 
 // 2. Cancel lightboxed dialogs
+run_rewrites();
 document.body.addEventListener("load", run_rewrites, false);
 document.body.addEventListener("DOMNodeInserted", run_rewrites, false);
 
@@ -88,15 +89,17 @@ function rewrite_link(el) {
     var params = get_params(el.href);
     var new_url = el.href;
 
-    // console.info('rewriting:', new_url);
+    console.info('rewriting:', new_url);
     
-    if ('redirect_uri' in params)
-      new_url = anonymize_link(params['redirect_uri']);
+    if(params.length) {
+      if ('redirect_uri' in params)
+        new_url = anonymize_link(params['redirect_uri']);
+    }
     
     if (new_url.substr(8, 12) == 'fb.trove.com')
       new_url = get_google_redirect_from_title(el.getAttribute('title'));
     
-    // console.info('rewrote:', new_url);
+    console.info('rewrote:', new_url);
     
     el.setAttribute('href', new_url);
 };
