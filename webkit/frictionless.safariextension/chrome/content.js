@@ -49,13 +49,19 @@ for (var i = 0; i < appCount; i++) {
     }
 }
 
-// 2. Cancel lightboxed dialogs
-var d_els = document.querySelectorAll("a[data-appname][rel='dialog']");
-// this could possibly be a better selector.
-var s_els = document.querySelectorAll("h6.ministoryMessage > a[target='_blank']");
 
-kill_events_and_dialogs(d_els);
-kill_events_and_dialogs(s_els);
+// 2. Cancel lightboxed dialogs
+document.body.addEventListener("load", run_rewrites, false);
+document.body.addEventListener("DOMNodeInserted", run_rewrites, false);
+
+function run_rewrites() {
+  var d_els = document.querySelectorAll("a[data-appname][rel='dialog']");
+  // this could possibly be a better selector.
+  var s_els = document.querySelectorAll("h6.ministoryMessage > a[target='_blank']");
+
+  kill_events_and_dialogs(d_els);
+  kill_events_and_dialogs(s_els);
+};
 
 function kill_events_and_dialogs(nodelist) {
   var length = nodelist.length;
@@ -65,10 +71,10 @@ function kill_events_and_dialogs(nodelist) {
     n.removeAttribute('rel');
     n.removeAttribute('onmousedown');
     n.setAttribute('target', '_blank');
+    n.setAttribute('data-frictionless', 'rewritten');
     rewrite_link(n);
   }
-}
-
+};
 
 function rewrite_link(el) {
     var params = get_params(el.href);
@@ -113,7 +119,7 @@ function get_params(dest_url) {
 };
 
 function encode_qs(obj) {
-  if(typeof obj !== 'object') return ''
+  if(typeof obj !== 'object') return '';
   var r = []; 
   for(var i in t) { 
     r.push(i + '=' + encodeURIComponent(t[i])); 
@@ -130,7 +136,7 @@ function anonymize_link(url) {
     return url;
   for(var x=0; x<dl; x++) {
     if(dirty_vars[x] in url_params) 
-      delete url_params[dirty_vars[x]]
+      delete url_params[dirty_vars[x]];
   }
   return url.substr(0, url.indexOf('?')) + encode_qs(url_params);
 };
