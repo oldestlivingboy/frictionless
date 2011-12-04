@@ -94,6 +94,12 @@ function parse_link_event(ev) {
         var host = get_host(ev.target.href);
 
         ev.preventDefault();
+        
+        if(!params) {
+          open_new_win(ev.target.href);
+          return false;
+        }
+        
         if ('redirect_uri' in params) {
             open_new_win(anonymize_link(params['redirect_uri']));
             return false;
