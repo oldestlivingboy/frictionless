@@ -55,14 +55,32 @@ document.body.addEventListener("load", run_rewrites, false);
 document.body.addEventListener("DOMNodeInserted", run_rewrites, false);
 
 function run_rewrites() {
+    // newsfeed - app not installed
     var d_els = document.querySelectorAll("a[data-appname][rel='dialog']");
+    // newsfeed - app installed
     var a_els = document.querySelectorAll("a[data-appname][title]");
+    // profile feed - both
     // this could possibly be a better selector.
     var s_els = document.querySelectorAll("h6.ministoryMessage > a[target='_blank']");
+    // all untrusted (ie. external) links
+    // var untrusted_links = $('a[href][onmousedown^="UntrustedLink"]');
+    var untrusted_links = document.querySelectorAll('a[href][onmousedown^="UntrustedLink"]');
 
+    // var newsItems = document.querySelectorAll();
+    // var externLinks = document.querySelectorAll(untrusted_links);
+    
+    // untrusted_links.each(kill_external_link_warning);
+    // kill_exernal_link_warning(untrusted_links);
+    
     kill_events_and_dialogs(d_els);
     kill_events_and_dialogs(a_els);
     kill_events_and_dialogs(s_els);
+    kill_events_and_dialogs(untrusted_links);
+};
+
+function kill_external_link_warning(node) {
+  nodelist[node].removeAttribute('onmousedown');
+  nodelist[node].setAttribute('data-frictionless-safe', 'true');
 };
 
 function kill_events_and_dialogs(nodelist) {
@@ -96,30 +114,13 @@ function rewrite_link(el) {
     el.setAttribute('href', new_url);
 };
 
-// 3. Parse link click events
-// document.body.addEventListener("click", parse_link_event);
-function parse_link_event(ev) {
-    if (ev.target && ev.target.nodeName == 'A') {
-        console.info('click:', ev.target);
-        var params = get_params(ev.target.href);
-        var host = get_host(ev.target.href);
-
-        ev.preventDefault();
-
-        if (!params) {
-            open_new_win(ev.target.href);
-            return false;
-        }
-
-        if ('redirect_uri' in params) {
-            open_new_win(anonymize_link(params['redirect_uri']));
-            return false;
-        }
-    }
-};
-
 
 // Utility functions
+
+function $(selector, root) {
+  var root = root || document;
+  return Array.prototype.slice.call(root.querySelectorAll(selector));
+};
 
 function get_google_redirect_from_title(story_title) {
   // return a 'im feeling lucky' google search link for story title
