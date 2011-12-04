@@ -109,10 +109,16 @@ function get_params(dest_url) {
     if (typeof params !== 'object' || params.length < 2) return false;
     for (var x = 0; x <= params.length; x++) {
         if (typeof params[x] == "string" && params[x].indexOf('=')) {
-            var t = params[x].split('='),
-            k = t[0],
-            z = t[1];
-            r[k] = decodeURIComponent(z);
+            var t = params[x].split('=');
+            if(t instanceof Array) {
+              var k = t[0];
+              if(t.length > 1) {
+                var z = t[1];
+                r[k] = decodeURIComponent(z);
+              } else {
+                r[k] = '';
+              }
+            }
         }
     }
     return r;
