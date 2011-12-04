@@ -160,7 +160,9 @@ function reverse_string(str) {
 
 function get_host(url) {
     var re = hostRegExp;
-    return url.match(re)[1].toString().toLowerCase();
+    var match = url.match(re);
+    if(match instanceof Array && match.length > 0) return match[1].toString().toLowerCase();
+    return false;
 };
 
 function open_new_win(url, options) {
