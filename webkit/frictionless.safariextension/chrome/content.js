@@ -97,7 +97,7 @@ function rewrite_link(el) {
 };
 
 // 3. Parse link click events
-document.body.addEventListener("click", parse_link_event);
+// document.body.addEventListener("click", parse_link_event);
 function parse_link_event(ev) {
     if (ev.target && ev.target.nodeName == 'A') {
         console.info('click:', ev.target);
