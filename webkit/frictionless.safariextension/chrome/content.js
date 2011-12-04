@@ -163,7 +163,8 @@ function get_host(url) {
     return url.match(re)[1].toString().toLowerCase();
 };
 
-function open_new_win(url) {
+function open_new_win(url, options) {
+    options = options || '';
     return window.open(url, '_blank', options);
 };
 
