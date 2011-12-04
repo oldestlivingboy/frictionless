@@ -61,6 +61,7 @@ function run_rewrites() {
     var s_els = document.querySelectorAll("h6.ministoryMessage > a[target='_blank']");
 
     kill_events_and_dialogs(d_els);
+    kill_events_and_dialogs(a_els);
     kill_events_and_dialogs(s_els);
 };
 
@@ -82,8 +83,16 @@ function rewrite_link(el) {
     var params = get_params(el.href);
     var new_url = el.href;
 
+    console.info('rewriting:', new_url);
+    
     if ('redirect_uri' in params)
-    new_url = params['redirect_uri'];
+      new_url = params['redirect_uri'];
+    
+    if (new_url.substr(8, 12) == 'fb.trove.com')
+      new_url = get_google_redirect_from_title(el.getAttribute('title'));
+    
+    console.info('rewrote:', anonymize_link(new_url));
+    
     el.setAttribute('href', anonymize_link(new_url));
 };
 
@@ -111,6 +120,14 @@ function parse_link_event(ev) {
 
 
 // Utility functions
+
+function get_google_redirect_from_title(story_title) {
+  // return a 'im feeling lucky' google search link for story title
+  story_title = story_title.replace(/ /g, '+');
+  var search_url = "https://www.google.com/search?num=30&hl=en&safe=off&site=&q=%22" + story_title + "%22&oq=%22" + story_title + "%22&aq=f&aqi=&aql=&gs_sm=ib&gs_upl=10555l10555l0l12478l1l1l0l0l0l0l448l448l4-1l1l0&btnI=1";
+  return search_url;
+};
+
 function get_params(dest_url) {
     var params = dest_url.substr(dest_url.indexOf("?") + 1).split('&'),
     r = {};
@@ -136,7 +153,7 @@ function encode_qs(obj) {
     if (typeof obj !== 'object') return '';
     var r = [];
     for (var i in obj) {
-        r.push(i + '=' + encodeURIComponent(t[i]));
+        r.push(i + '=' + encodeURIComponent(obj[i]));
     };
     return r.join('&');
 };
