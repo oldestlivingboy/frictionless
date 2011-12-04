@@ -133,16 +133,17 @@ function get_params(dest_url) {
 function encode_qs(obj) {
   if(typeof obj !== 'object') return '';
   var r = []; 
-  for(var i in t) { 
+  for(var i in obj) { 
     r.push(i + '=' + encodeURIComponent(t[i])); 
   }; 
   return r.join('&');
 };
 
 function anonymize_link(url) {
-  // remove the facebook params in URLs to make the links anonymous
+  // remove the facebook params in URLs to make the links anonymous  
   var dirty_vars = ['fb_action_ids', 'fb_action_types', 'fb_source', 'fb_ref'], dl = dirty_vars.length;
   var url_params = get_params(url);
+  if(!url_params) return url;
   var ret_url = '';
   if(url_params.length < 1)
     return url;
