@@ -56,6 +56,7 @@ document.body.addEventListener("DOMNodeInserted", run_rewrites, false);
 
 function run_rewrites() {
     var d_els = document.querySelectorAll("a[data-appname][rel='dialog']");
+    var a_els = document.querySelectorAll("a[data-appname][title]");
     // this could possibly be a better selector.
     var s_els = document.querySelectorAll("h6.ministoryMessage > a[target='_blank']");
 
@@ -67,6 +68,7 @@ function kill_events_and_dialogs(nodelist) {
     var length = nodelist.length;
     for (var x = 0; x < length; x++) {
         var n = nodelist.item(x);
+        if(n.hasAttribute('data-frictionless')) continue;
         n.onmousedown = null;
         n.removeAttribute('rel');
         n.removeAttribute('onmousedown');
