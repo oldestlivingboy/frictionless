@@ -99,7 +99,17 @@ function rewrite_link(el) {
     }
 
     if (new_url.substr(8, 12) == 'fb.trove.com') {
-      new_url = get_google_redirect_from_title(el.getAttribute('title'));
+      var title = el.getAttribute('title');
+      if (title) {
+        new_url = get_google_redirect_from_title(title);
+      } else {
+        var title = el.innerHTML;
+        if (title) {
+          new_url = get_google_redirect_from_title(title);
+        } else {
+          console.info('Trove link with no title:', el.href);
+        }
+      }
     }
 
     console.info('rewrote:', orig_url, new_url);
@@ -120,6 +130,9 @@ function $(selector, rootNode) {
 
 function get_google_redirect_from_title(story_title) {
     // return a 'im feeling lucky' google search link for story title
+    if(!story_title) {
+      console.info('attempted rewrite on a story with no title');
+    }
     story_title = story_title.replace(/ /g, '+');
     var search_url = "http://www.google.com/search?btnI=1&q=%22" + story_title + "%22";
     return search_url;
