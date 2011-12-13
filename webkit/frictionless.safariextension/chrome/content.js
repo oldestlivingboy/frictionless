@@ -23,7 +23,8 @@
 
 // @TODO add options page with:
 //  * open links in new window
-//  * auto-remove app authorizations (single button, click once and removes all social sharing apps)
+//  * auto-remove app authorizations
+
 // Globals
 var hostRegExp = new RegExp('^(?:f|ht)tp(?:s)?\://([^/]+)', 'im');
 
@@ -57,16 +58,20 @@ for (var i = 0; i < appCount; i++) {
 
 
 // 2. Cancel lightboxed dialogs
-run_rewrites();
-document.body.addEventListener("load", run_rewrites, false);
-document.body.addEventListener("DOMNodeInserted", run_rewrites, false);
+run_story_rewrites();
+document.body.addEventListener("load", run_story_rewrites, false);
+document.body.addEventListener("DOMNodeInserted", run_story_rewrites, false);
 
-function run_rewrites() {
-    var untrusted_links = $('a[href][onmousedown^="UntrustedLink"]');
+data-gt="object_type": "article"
+
+function run_story_rewrites() {
     var story_links = $("a[data-appname][rel='dialog'], a[data-appname][title], h6.ministoryMessage > a[target='_blank']");
-
-    untrusted_links.forEach(kill_external_link_warning);
     story_links.forEach(kill_events_and_dialogs);
+};
+
+function run_link_rewrites() {
+    var untrusted_links = $('a[href][onmousedown^="UntrustedLink"]');
+    untrusted_links.forEach(kill_external_link_warning);
 };
 
 function kill_external_link_warning(node) {
@@ -91,12 +96,14 @@ function rewrite_link(el) {
     console.info('rewriting:', new_url);
 
     if (params.length) {
-        if ('redirect_uri' in params)
-        new_url = anonymize_link(params['redirect_uri']);
+        if ('redirect_uri' in params) {
+          new_url = anonymize_link(params['redirect_uri']);
+        }
     }
 
-    if (new_url.substr(8, 12) == 'fb.trove.com')
-    new_url = get_google_redirect_from_title(el.getAttribute('title'));
+    if (new_url.substr(8, 12) == 'fb.trove.com') {
+      new_url = get_google_redirect_from_title(el.getAttribute('title'));
+    }
 
     console.info('rewrote:', new_url);
 
@@ -108,8 +115,9 @@ function rewrite_link(el) {
 function $(selector, rootNode) {
     var root = rootNode || document;
     var nodeList = root.querySelectorAll(selector);
-    if (nodeList.length)
-    return Array.prototype.slice.call(nodeList);
+    if (nodeList.length) {
+      return Array.prototype.slice.call(nodeList);
+    }
     return [];
 };
 
