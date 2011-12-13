@@ -98,14 +98,12 @@ function rewrite_link(el) {
     var params = get_params(orig_url);
     var new_url = false;
     
-
-    if (params.length) {
-        if ('redirect_uri' in params) {
-          new_url = anonymize_link(params['redirect_uri']);
-        }
-    }
-
-    if (orig_url.substr(7, 12) == 'fb.trove.com' || orig_url.substr(8, 12) == 'fb.trove.com') {
+    // 1. indy, guardian, etc.
+    if (params.length && 'redirect_uri' in params) {
+      new_url = anonymize_link(params['redirect_uri']);
+      
+    // 2. washpo social
+    } else if (orig_url.substr(7, 12) == 'fb.trove.com' || orig_url.substr(8, 12) == 'fb.trove.com') {
       var title = el.getAttribute('title');
       if (title) {
         new_url = get_google_redirect_from_title(title);
@@ -117,6 +115,8 @@ function rewrite_link(el) {
           console.info('Trove link with no title:', el.href);
         }
       }
+      
+    // 3. wsj
     } else if (orig_url.substr(7, 14) == 'online.wsj.com' || orig_url.substr(8, 14) == 'online.wsj.com') {
       var article_link = anonymize_link(el.getAttribute('href'));
       if (article_link) {
@@ -124,6 +124,8 @@ function rewrite_link(el) {
       } else {
         console.info('wsj link with no title:', el.href);
       }
+      
+    // 4. else it works
     } else {
       new_url = anonymize_link(orig_url);
     }
@@ -161,7 +163,7 @@ function get_params(dest_url) {
     dest_url = dest_url.replace(/&amp;/g, '&');
     var params = dest_url.substr(dest_url.indexOf("?") + 1).split('&'),
     r = {};
-    if (typeof params !== 'object' || params.length < 2) return false;
+    if (typeof params !== 'object' || params.length < 1) return false;
     for (var x = 0; x <= params.length; x++) {
         if (typeof params[x] == "string" && params[x].indexOf('=')) {
             var t = params[x].split('=');
