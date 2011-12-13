@@ -67,7 +67,7 @@ document.body.addEventListener("DOMNodeInserted", run_link_rewrites, false);
 
 
 function run_story_rewrites() {
-    var story_links = $("a[data-appname][rel='dialog'], a[data-appname][title], h6.ministoryMessage > a[target='_blank']");
+    var story_links = $("a[data-appname][rel='dialog'], a[data-appname][title], h6.ministoryMessage > a[target='_blank'], a[href^='http://online.wsj.com']");
     story_links.forEach(kill_events_and_dialogs);
 };
 
@@ -93,9 +93,10 @@ function kill_events_and_dialogs(node) {
 };
 
 function rewrite_link(el) {
-    var params = get_params(el.href);
-    var new_url = el.href;
-    var orig_url = new_url;
+    var orig_url = el.href;
+    var params = get_params(orig_url);
+    var new_url = false;
+    
 
     if (params.length) {
         if ('redirect_uri' in params) {
@@ -103,7 +104,7 @@ function rewrite_link(el) {
         }
     }
 
-    if (new_url.substr(8, 12) == 'fb.trove.com') {
+    if (orig_url.substr(8, 12) == 'fb.trove.com') {
       var title = el.getAttribute('title');
       if (title) {
         new_url = get_google_redirect_from_title(title);
@@ -116,10 +117,22 @@ function rewrite_link(el) {
         }
       }
     }
+    
+    if (orig_url.substr(7, 14) == 'online.wsj.com' || orig_url.substr(7, 14) == 'online.wsj.com') {
+      var article_link = anonymize_link(el.getAttribute('href'));
+      if (article_link) {
+        new_url = get_google_redirect_from_title(article_link);
+      } else {
+        console.info('wsj link with no title:', el.href);
+      }
+    }
 
-    console.info('rewrote:', orig_url, new_url);
-
-    el.setAttribute('href', new_url);
+    if(new_url) {
+      console.info('rewrote:', orig_url, new_url);
+      el.setAttribute('href', new_url);
+    } else {
+      console.info('no rewrite:', orig_url, new_url);
+    }
 };
 
 
