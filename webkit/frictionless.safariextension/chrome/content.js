@@ -82,6 +82,7 @@ function kill_events_and_dialogs(node) {
     node.onmousedown = null;
     node.removeAttribute('rel');
     node.removeAttribute('onmousedown');
+    node.removeAttribute('data-hovercard');
     node.setAttribute('target', '_blank');
     node.setAttribute('data-frictionless', 'rewritten');
     rewrite_link(node);
