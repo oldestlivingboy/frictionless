@@ -58,13 +58,14 @@ for (var i = 0; i < appCount; i++) {
 
 
 // 2. Cancel lightboxed dialogs
-run_story_rewrites();
-run_link_rewrites();
-document.body.addEventListener("load", run_story_rewrites, false);
-document.body.addEventListener("load", run_link_rewrites, false);
-document.body.addEventListener("DOMNodeInserted", run_story_rewrites, false);
-document.body.addEventListener("DOMNodeInserted", run_link_rewrites, false);
+run_rewrites();
+document.body.addEventListener("load", run_rewrites, false);
+document.body.addEventListener("DOMNodeInserted", run_rewrites, false);
 
+function run_rewrites() {
+  run_story_rewrites();
+  run_link_rewrites();
+};
 
 function run_story_rewrites() {
     var story_links = $("a[data-appname][rel='dialog'], a[data-appname][title], h6.ministoryMessage > a[target='_blank'], a[href^='http://online.wsj.com']");
