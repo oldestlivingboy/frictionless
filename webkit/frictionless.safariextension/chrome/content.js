@@ -116,18 +116,18 @@ function rewrite_link(el) {
           console.info('Trove link with no title:', el.href);
         }
       }
-    }
-    
-    if (orig_url.substr(7, 14) == 'online.wsj.com' || orig_url.substr(7, 14) == 'online.wsj.com') {
+    } else if (orig_url.substr(7, 14) == 'online.wsj.com' || orig_url.substr(7, 14) == 'online.wsj.com') {
       var article_link = anonymize_link(el.getAttribute('href'));
       if (article_link) {
         new_url = get_google_redirect_from_title(article_link);
       } else {
         console.info('wsj link with no title:', el.href);
       }
+    } else {
+      new_url = anonymize_link(orig_url);
     }
-
-    if(new_url) {
+    
+    if(new_url != orig_url) {
       console.info('rewrote:', orig_url, new_url);
       el.setAttribute('href', new_url);
     } else {
