@@ -127,6 +127,7 @@ function get_google_redirect_from_title(story_title) {
 };
 
 function get_params(dest_url) {
+    var dest_url = dest_url.replace(/&amp;/g, '&');
     var params = dest_url.substr(dest_url.indexOf("?") + 1).split('&'),
     r = {};
     if (typeof params !== 'object' || params.length < 2) return false;
