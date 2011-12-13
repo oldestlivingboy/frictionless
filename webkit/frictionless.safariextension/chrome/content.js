@@ -62,7 +62,7 @@ run_story_rewrites();
 document.body.addEventListener("load", run_story_rewrites, false);
 document.body.addEventListener("DOMNodeInserted", run_story_rewrites, false);
 
-data-gt="object_type": "article"
+// data-gt="object_type": "article"
 
 function run_story_rewrites() {
     var story_links = $("a[data-appname][rel='dialog'], a[data-appname][title], h6.ministoryMessage > a[target='_blank']");
