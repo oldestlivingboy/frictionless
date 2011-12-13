@@ -153,7 +153,7 @@ function get_google_redirect_from_title(story_title) {
       console.info('attempted rewrite on a story with no title');
     }
     story_title = story_title.replace(/ /g, '+');
-    var search_url = "http://www.google.com/search?btnI=1&q=%22" + story_title + "%22";
+    var search_url = "https://www.google.com/search?btnI=1&q=%22" + story_title + "%22";
     return search_url;
 };
 
