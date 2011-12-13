@@ -104,19 +104,19 @@ function rewrite_link(el) {
         }
     }
 
-    if (orig_url.substr(8, 12) == 'fb.trove.com') {
+    if (orig_url.substr(7, 12) == 'fb.trove.com' || orig_url.substr(8, 12) == 'fb.trove.com') {
       var title = el.getAttribute('title');
       if (title) {
         new_url = get_google_redirect_from_title(title);
       } else {
-        var title = el.innerHTML;
+        title = el.innerHTML;
         if (title) {
           new_url = get_google_redirect_from_title(title);
         } else {
           console.info('Trove link with no title:', el.href);
         }
       }
-    } else if (orig_url.substr(7, 14) == 'online.wsj.com' || orig_url.substr(7, 14) == 'online.wsj.com') {
+    } else if (orig_url.substr(7, 14) == 'online.wsj.com' || orig_url.substr(8, 14) == 'online.wsj.com') {
       var article_link = anonymize_link(el.getAttribute('href'));
       if (article_link) {
         new_url = get_google_redirect_from_title(article_link);
@@ -157,7 +157,7 @@ function get_google_redirect_from_title(story_title) {
 };
 
 function get_params(dest_url) {
-    var dest_url = dest_url.replace(/&amp;/g, '&');
+    dest_url = dest_url.replace(/&amp;/g, '&');
     var params = dest_url.substr(dest_url.indexOf("?") + 1).split('&'),
     r = {};
     if (typeof params !== 'object' || params.length < 2) return false;
