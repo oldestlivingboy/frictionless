@@ -56,7 +56,6 @@ for (var i = 0; i < appCount; i++) {
     }
 }
 
-
 // 2. Cancel lightboxed dialogs
 run_story_rewrites();
 document.body.addEventListener("load", run_story_rewrites, false);
