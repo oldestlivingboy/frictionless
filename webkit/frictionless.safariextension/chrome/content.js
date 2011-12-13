@@ -58,9 +58,11 @@ for (var i = 0; i < appCount; i++) {
 
 
 // 2. Cancel lightboxed dialogs
-run_rewrites();
-document.body.addEventListener("load", run_rewrites, false);
-document.body.addEventListener("DOMNodeInserted", run_rewrites, false);
+run_story_rewrites();
+document.body.addEventListener("load", run_story_rewrites, false);
+document.body.addEventListener("load", run_link_rewrites, false);
+document.body.addEventListener("DOMNodeInserted", run_story_rewrites, false);
+document.body.addEventListener("DOMNodeInserted", run_link_rewrites, false);
 
 function run_rewrites() {
   run_story_rewrites();
