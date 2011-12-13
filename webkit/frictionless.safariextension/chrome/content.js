@@ -90,8 +90,7 @@ function kill_events_and_dialogs(node) {
 function rewrite_link(el) {
     var params = get_params(el.href);
     var new_url = el.href;
-
-    console.info('rewriting:', new_url);
+    var orig_url = new_url;
 
     if (params.length) {
         if ('redirect_uri' in params) {
@@ -103,7 +102,7 @@ function rewrite_link(el) {
       new_url = get_google_redirect_from_title(el.getAttribute('title'));
     }
 
-    console.info('rewrote:', new_url);
+    console.info('rewrote:', orig_url, new_url);
 
     el.setAttribute('href', new_url);
 };
