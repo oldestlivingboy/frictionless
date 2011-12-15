@@ -101,13 +101,16 @@ function rewrite_link(el) {
     var new_url = false;
     
     // 1. indy, guardian, etc.
-    if (params.length && 'redirect_uri' in params) {
+    if ('redirect_uri' in params) {
       new_url = anonymize_link(params['redirect_uri']);
       
     // 2. washpo social
     } else if (orig_url.substr(7, 12) == 'fb.trove.com' || orig_url.substr(8, 12) == 'fb.trove.com') {
       var title = el.getAttribute('title');
       if (title) {
+        title =
+            title.split('Add Washington Post Social Reader to read: ')[1] ||
+                title; // Yank any prefix.
         new_url = get_google_redirect_from_title(title);
       } else {
         title = el.innerHTML;
