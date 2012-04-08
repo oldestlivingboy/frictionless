@@ -40,8 +40,10 @@ var apps = [
 // WSJ Social
 180444840287,
 // The Guardian
-225771117449558
+225771117449558,
 // The Washington Post
+319227784756907,
+// Terra
 ];
 var appCount = apps.length;
 
