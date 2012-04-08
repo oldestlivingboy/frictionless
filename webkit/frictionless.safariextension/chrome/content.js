@@ -72,7 +72,7 @@ function run_rewrites() {
 };
 
 function run_story_rewrites() {
-    var story_links = $("a[data-appname][rel='dialog'], a[data-appname][title], h6.ministoryMessage > a[target='_blank'], a[href^='http://online.wsj.com']");
+    var story_links = $("a[href*='connect/uiserver.php?app_id='], a[data-appname][rel='dialog'], a[data-appname][title], h6.ministoryMessage > a[target='_blank'], a[href^='http://online.wsj.com']");
     story_links.forEach(kill_events_and_dialogs);
 };
 
@@ -101,9 +101,16 @@ function rewrite_link(el) {
     var orig_url = el.href;
     var params = get_params(orig_url);
     var new_url = false;
-    
+
+    var params_length = 0;
+    for(var i in params) {
+        if (params.hasOwnProperty(i)) {
+            params_length++;
+        }
+    }
+
     // 1. indy, guardian, etc.
-    if (params.length && 'redirect_uri' in params) {
+    if (params_length && 'redirect_uri' in params) {
       new_url = anonymize_link(params['redirect_uri']);
       
     // 2. washpo social
@@ -135,7 +142,7 @@ function rewrite_link(el) {
     }
     
     if(new_url != orig_url) {
-      console.info('rewrote:', orig_url, new_url);
+      console.info('rewrote:', orig_url, '\nto:', new_url);
       el.setAttribute('href', new_url);
     } else {
       console.info('no rewrite:', orig_url, new_url);
