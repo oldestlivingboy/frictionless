@@ -203,12 +203,19 @@ function encode_qs(obj) {
 
 function anonymize_link(url) {
     // remove the facebook params in URLs to make the links anonymous
-    var dirty_vars = ['fb_action_ids', 'fb_action_types', 'fb_source', 'fb_ref'],
+    var dirty_vars = ['fb_action_ids', 'fb_action_types', 'fb_source', 'fb_ref', 'ref'],
     dl = dirty_vars.length;
     var url_params = get_params(url);
     if (!url_params) return url;
     var ret_url = '';
-    if (url_params.length < 1)
+
+    var url_params_length = 0;
+    for(var i in url_params) {
+        if (url_params.hasOwnProperty(i)) {
+            url_params_length++;
+        }
+    }
+    if (url_params_length < 1)
     return url;
     for (var x = 0; x < dl; x++) {
         if (dirty_vars[x] in url_params)
