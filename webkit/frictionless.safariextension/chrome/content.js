@@ -97,17 +97,22 @@ function kill_events_and_dialogs(node) {
     rewrite_link(node);
 };
 
-function rewrite_link(el) {
-    var orig_url = el.href;
-    var params = get_params(orig_url);
-    var new_url = false;
-
+function the_length(params) {
     var params_length = 0;
     for(var i in params) {
         if (params.hasOwnProperty(i)) {
             params_length++;
         }
     }
+    return params_length;
+}
+
+function rewrite_link(el) {
+    var orig_url = el.href;
+    var params = get_params(orig_url);
+    var new_url = false;
+
+    var params_length = the_length(params);
 
     // 1. indy, guardian, etc.
     if (params_length && 'redirect_uri' in params) {
@@ -209,12 +214,7 @@ function anonymize_link(url) {
     if (!url_params) return url;
     var ret_url = '';
 
-    var url_params_length = 0;
-    for(var i in url_params) {
-        if (url_params.hasOwnProperty(i)) {
-            url_params_length++;
-        }
-    }
+    var url_params_length = the_length(url_params);
     if (url_params_length < 1)
     return url;
     for (var x = 0; x < dl; x++) {
