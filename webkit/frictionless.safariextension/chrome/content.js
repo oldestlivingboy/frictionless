@@ -49,7 +49,8 @@ var appCount = apps.length;
 
 for (var i = 0; i < appCount; i++) {
     if (
-    location.href.indexOf('dialog/permissions.request?app_id=' + apps[i]) + 1
+      (location.href.indexOf('dialog/permissions.request?app_id=' + apps[i]) + 1)
+      || (location.href.indexOf('dialog/oauth?client_id=' + apps[i]) + 1)
     ) {
         var button = document.getElementsByName('cancel_clicked')[0];
         console.info('cancel:', button);
