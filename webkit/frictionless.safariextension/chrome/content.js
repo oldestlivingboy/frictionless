@@ -181,7 +181,9 @@ function get_google_redirect_from_title(story_title) {
 
 function get_params(dest_url) {
     dest_url = dest_url.replace(/&amp;/g, '&');
-    var params = dest_url.substr(dest_url.indexOf("?") + 1).split('&'),
+    var query_start = dest_url.indexOf("?") + 1;
+    if(query_start <= 0) return false;
+    var params = dest_url.substr(query_start).split('&'),
     r = {};
     if (typeof params !== 'object' || params.length < 1) return false;
     for (var x = 0; x <= params.length; x++) {
